@@ -19,11 +19,13 @@ It will generally not behave correctly in Xcode's Run console.
 
 ## Installation (SwiftPM)
 
-Local development dependency:
-
 ```swift
 // Package.swift
-.package(path: "/Users/zats/Documents/xcode/Libraries/SwiftTUIKit"),
+// Option A: local development dependency (relative path)
+.package(path: "../SwiftTUIKit"),
+
+// Option B: Git dependency (replace with your fork/org)
+// .package(url: "https://github.com/<your-org>/SwiftTUIKit.git", branch: "main"),
 ```
 
 Then add the product to your target:
@@ -125,8 +127,6 @@ marker and show it.
 This package ships multiple executable examples (run them from a real terminal):
 
 ```sh
-cd ~/Documents/xcode/Libraries/SwiftTUIKit
-
 swift run SwiftTUIKitExampleChatSimple
 swift run SwiftTUIKitExampleKeyTester
 swift run SwiftTUIKitExampleOverlayDemo
@@ -152,7 +152,6 @@ swift run SwiftTUIKitExampleImage
 ## Development
 
 ```sh
-cd ~/Documents/xcode/Libraries/SwiftTUIKit
 swift test
 swift build
 ```
