@@ -37,70 +37,10 @@ Then add the product to your target:
 )
 ```
 
-## Quick Start (Imperative)
+## Quick Start
 
-Minimal app with a `Text` and an `Input`.
-
-```swift
-import Foundation
-import SwiftTUIKit
-
-final class App: Component, Focusable, @unchecked Sendable {
-  private weak var tui: TUI?
-  private let input = Input()
-  private var lines: [String] = ["Pi: Hello. Type and press Enter."]
-
-  var focused: Bool = false { didSet { input.focused = focused } }
-
-  init(tui: TUI) {
-    self.tui = tui
-    input.onSubmit = { [weak self] text in
-      guard let self else { return }
-      let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
-      if t.isEmpty { return }
-      self.lines.append("You: " + t)
-      self.input.setValue("")
-      self.tui?.requestRender()
-    }
-    input.onEscape = { [weak self] in
-      self?.tui?.stop()
-      Foundation.exit(0)
-    }
-  }
-
-  func invalidate() {}
-
-  func render(width: Int) -> [String] {
-    var out: [String] = []
-    out.append(contentsOf: lines.flatMap { ANSI.wrapTextWithAnsi($0, width: max(1, width)) })
-    out.append("")
-    out.append(contentsOf: input.render(width: width))
-    return out
-  }
-
-  func handleInput(_ event: InputEvent) {
-    input.handleInput(event)
-  }
-}
-
-let tui = TUI(terminal: ProcessTerminal())
-let app = App(tui: tui)
-tui.addChild(app)
-tui.setFocus(app)
-tui.start()
-dispatchMain()
-```
-
-Notes:
-
-- Use `Esc` or `Ctrl+C` for "cancel" by matching `EditorAction.selectCancel`
-  in your component's `handleInput(_:)` or by wiring `Input.onEscape`.
-- Call `tui.requestRender()` after state changes.
-
-## Quick Start (Builder DSL)
-
-The DSL is intentionally small and is not a full SwiftUI reimplementation. It is
-meant to make simple layouts less verbose.
+The DSL is intentionally small and is not a full SwiftUI reimplementation. It
+is meant to make simple layouts less verbose.
 
 ```swift
 import SwiftTUIKit
@@ -216,4 +156,3 @@ cd ~/Documents/xcode/Libraries/SwiftTUIKit
 swift test
 swift build
 ```
-

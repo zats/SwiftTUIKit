@@ -60,13 +60,12 @@ final class ChatApp: Component, Focusable, @unchecked Sendable {
     }
 }
 
-let terminal = ProcessTerminal()
-let tui = TUI(terminal: terminal)
+let tui = TUI {
+    AnyTUIView { tui in
+        ChatApp(tui: tui)
+    }
+}
 
-let app = ChatApp(tui: tui)
-tui.addChild(app)
-tui.setFocus(app)
 tui.start()
 
 dispatchMain()
-

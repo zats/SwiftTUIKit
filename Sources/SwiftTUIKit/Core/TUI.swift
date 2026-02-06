@@ -60,19 +60,19 @@ public protocol OverlayHandle: AnyObject, Sendable {
 }
 
 public class Container: Component, @unchecked Sendable {
-    public var children: [Component] = []
+    var children: [Component] = []
 
     public init() {}
 
-    public func addChild(_ component: Component) {
+    func addChild(_ component: Component) {
         children.append(component)
     }
 
-    public func removeChild(_ component: Component) {
+    func removeChild(_ component: Component) {
         children.removeAll { ObjectIdentifier($0) == ObjectIdentifier(component) }
     }
 
-    public func clear() {
+    func clear() {
         children.removeAll(keepingCapacity: false)
     }
 
@@ -126,7 +126,7 @@ public final class TUI: Container, @unchecked Sendable {
     // Optional raw write log (for debugging).
     private var writeLogHandle: FileHandle?
 
-    public init(terminal: Terminal = ProcessTerminal()) {
+    init(terminal: Terminal = ProcessTerminal()) {
         self.terminal = terminal
         self.showHardwareCursor = ProcessInfo.processInfo.environment["PI_HARDWARE_CURSOR"] == "1"
         self.clearOnShrink = ProcessInfo.processInfo.environment["PI_CLEAR_ON_SHRINK"] == "1"
@@ -142,6 +142,14 @@ public final class TUI: Container, @unchecked Sendable {
 
     public func start() {
         stopped = false
+
+        // Default focus policy: if nothing is explicitly focused, focus the first component
+        // in the tree so key handling works out of the box with builder-created hierarchies.
+        if focusedComponent == nil {
+            if let first = firstComponent(in: self) {
+                setFocus(first)
+            }
+        }
 
         terminal.start(
             onInput: { [weak self] data in self?.handleInputBytes(data) },
@@ -170,6 +178,16 @@ public final class TUI: Container, @unchecked Sendable {
         if let new = component as? Focusable {
             new.focused = true
         }
+    }
+
+    private func firstComponent(in root: Component) -> Component? {
+        if let container = root as? Container {
+            for child in container.children {
+                if let found = firstComponent(in: child) { return found }
+            }
+            return container.children.first
+        }
+        return root
     }
 
     // MARK: - Overlays

@@ -81,10 +81,11 @@ print("hello")
     }
 }
 
-let tui = TUI(terminal: ProcessTerminal())
-let app = App(tui: tui)
-tui.addChild(app)
-tui.setFocus(app)
+let tui = TUI {
+    AnyTUIView { tui in
+        App(tui: tui)
+    }
+}
+
 tui.start()
 dispatchMain()
-

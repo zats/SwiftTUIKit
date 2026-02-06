@@ -43,9 +43,11 @@ final class KeyTester: Component, @unchecked Sendable {
     }
 }
 
-let tui = TUI(terminal: ProcessTerminal())
-let app = KeyTester(tui: tui)
-tui.addChild(app)
-tui.setFocus(app)
+let tui = TUI {
+    AnyTUIView { tui in
+        KeyTester(tui: tui)
+    }
+}
+
 tui.start()
 dispatchMain()

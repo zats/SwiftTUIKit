@@ -91,10 +91,11 @@ final class SelectListApp: Component, Focusable, @unchecked Sendable {
     }
 }
 
-let tui = TUI(terminal: ProcessTerminal())
-let app = SelectListApp(tui: tui)
-tui.addChild(app)
-tui.setFocus(app)
+let tui = TUI {
+    AnyTUIView { tui in
+        SelectListApp(tui: tui)
+    }
+}
+
 tui.start()
 dispatchMain()
-
